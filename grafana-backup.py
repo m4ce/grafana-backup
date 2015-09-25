@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# grafana-backup.py
+# grafana.py
 #
 # Author: Matteo Cerutti <matteo.cerutti@hotmail.co.uk>
 #
@@ -17,7 +17,7 @@ import shutil
 import tarfile
 import logging
 
-class Grafana:
+class GrafanaBackup:
   def __init__(self, **kwargs):
     if (('api_key' not in kwargs or kwargs['api_key'] is None) and \
        ('username' not in kwargs or kwargs['username'] is None or 'password' not in kwargs or kwargs['password'] is None)) or \
@@ -107,7 +107,7 @@ class Grafana:
       dashboards.append({'title': 'Home dashboard', 'uri': 'home'})
       for dash in dashboards:
         data = self.get_dashboard(dash['uri'])
-        # id needs to be null if you want to re-import it again later
+        # later needed to import it
         data['dashboard']['id'] = None
         uri = dash['uri']
         if uri != 'home':
@@ -210,14 +210,14 @@ class Grafana:
 
 def parse_opts():
   parser = argparse.ArgumentParser(description='Grafana Backup Tool')
-  parser.add_argument("-H", "--host", action="store", dest="api_host", default="127.0.0.1", help="API host (default: %default)")
-  parser.add_argument("-P", "--port", action="store", dest="api_port", default=3001, help="API port (default: %default)")
+  parser.add_argument("-H", "--host", action="store", dest="api_host", default="127.0.0.1", help="API host (default: %(default)s)")
+  parser.add_argument("-P", "--port", action="store", dest="api_port", default=3001, help="API port (default: %(default)s)")
   parser.add_argument("-k", "--key", action="store", dest="api_key", help="API key")
   parser.add_argument("-u", "--user", action="store", dest="username", help="User for basic authentication")
   parser.add_argument("-p", "--password", action="store", dest="password", help="Password for basic authentication")
-  parser.add_argument("-o", "--output", action="store", dest="output_file", default="./grafana-backup-" + time.strftime("%Y%m%d%H%M%S") + ".tgz", help="Output tarball (default: %default)")
-  parser.add_argument("-c", "--config", action="store", dest="config_file", default="./grafana-backup.yaml", help="Optional configuration file to read options from (default: %default)")
-  parser.add_argument("-l", "--log-level", action="store", dest="loglevel", default="INFO", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], help="Set the logging level")
+  parser.add_argument("-o", "--output", action="store", dest="output_file", default="./grafana-backup-" + time.strftime("%Y%m%d%H%M%S") + ".tgz", help="Output tarball (default: %(default)s)")
+  parser.add_argument("-c", "--config", action="store", dest="config_file", default="./grafana-backup.yaml", help="Optional configuration file to read options from (default: %(default)s)")
+  parser.add_argument("-l", "--log-level", action="store", dest="loglevel", default="INFO", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], help="Set the logging level (default: %(default)s)")
   opts = parser.parse_args()
 
   if os.path.isfile(opts.config_file):
@@ -238,5 +238,5 @@ def parse_opts():
 
 if __name__ == "__main__":
   # convert to dict
-  app = Grafana(**vars(parse_opts()))
+  app = GrafanaBackup(**vars(parse_opts()))
   sys.exit(app.run())
