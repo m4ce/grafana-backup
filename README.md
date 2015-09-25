@@ -22,7 +22,7 @@ You can run the tool with --help to check out all the command line options avail
 
 ```
 usage: grafana-backup.py [-h] [-H API_HOST] [-P API_PORT] [-k API_KEY]
-                         [-u USERNAME] [-p PASSWORD] [-o OUTPUT_FILE]
+                         [-u USERNAME] [-p PASSWORD] [-o OUTPUT_DIR]
                          [-c CONFIG_FILE]
                          [-l {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
@@ -40,9 +40,8 @@ optional arguments:
                         User for basic authentication
   -p PASSWORD, --password PASSWORD
                         Password for basic authentication
-  -o OUTPUT_FILE, --output OUTPUT_FILE
-                        Output tarball (default: ./grafana-
-                        backup-20150925133210.tgz)
+  -o OUTPUT_DIR, --output OUTPUT_DIR
+                        Directory where backup will be stored (default: .)
   -c CONFIG_FILE, --config CONFIG_FILE
                         Optional configuration file to read options from
                         (default: ./grafana-backup.yaml)

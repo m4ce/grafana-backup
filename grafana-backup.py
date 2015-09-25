@@ -31,10 +31,8 @@ class GrafanaBackup:
     if 'api_port' not in kwargs or 'api_port' is None:
       raise ValueError("API port must be given")
 
-    if 'output_file' not in kwargs or 'output_file' is None:
-      raise ValueError("Output tarball must be given")
-
-    self.opts = kwargs
+    if 'output_dir' not in kwargs or 'output_dir' is None:
+      raise ValueError("Output directory must be given")
 
     logger = logging.getLogger("Grafana")
     if kwargs['loglevel']:
@@ -48,8 +46,11 @@ class GrafanaBackup:
 
     self.logger = logger
 
-    # set up temporary dir
-    self.tmpdir = tempfile.mkdtemp() + '/' + os.path.splitext(os.path.basename(self.opts['output_file']))[0]
+    self.opts = kwargs
+
+    # set up output file & temporary dir
+    self.output_file = self.opts['output_dir'] + "./grafana-backup-" + time.strftime("%Y%m%d%H%M%S") + ".tgz"
+    self.tmpdir = tempfile.mkdtemp() + '/' + os.path.splitext(os.path.basename(self.output_file))[0]
 
   def api_read(self, query):
     try:
@@ -184,7 +185,7 @@ class GrafanaBackup:
       tar.add(src, arcname = os.path.basename(src))
 
   def run(self):
-    if os.path.exists(self.opts['output_file']):
+    if os.path.exists(self.output_file):
       raise StandardError("Output tarball already exists, remove it first")
 
     self.dump_dashboards()
@@ -196,7 +197,7 @@ class GrafanaBackup:
 
     # archive temporary dir
     try:
-      self.do_archive(self.opts['output_file'], self.tmpdir)
+      self.do_archive(self.output_file, self.tmpdir)
       self.logger.info("Completed")
     except Exception, e:
       self.logger.info("Caught exception: " + str(e))
@@ -215,7 +216,7 @@ def parse_opts():
   parser.add_argument("-k", "--key", action="store", dest="api_key", help="API key")
   parser.add_argument("-u", "--user", action="store", dest="username", help="User for basic authentication")
   parser.add_argument("-p", "--password", action="store", dest="password", help="Password for basic authentication")
-  parser.add_argument("-o", "--output", action="store", dest="output_file", default="./grafana-backup-" + time.strftime("%Y%m%d%H%M%S") + ".tgz", help="Output tarball (default: %(default)s)")
+  parser.add_argument("-o", "--output", action="store", dest="output_dir", default=".", help="Directory where backup will be stored (default: %(default)s)")
   parser.add_argument("-c", "--config", action="store", dest="config_file", default="./grafana-backup.yaml", help="Optional configuration file to read options from (default: %(default)s)")
   parser.add_argument("-l", "--log-level", action="store", dest="loglevel", default="INFO", choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], help="Set the logging level (default: %(default)s)")
   opts = parser.parse_args()
