@@ -49,7 +49,7 @@ class GrafanaBackup:
     self.opts = kwargs
 
     # set up output file & temporary dir
-    self.output_file = self.opts['output_dir'] + "./grafana-backup-" + time.strftime("%Y%m%d%H%M%S") + ".tgz"
+    self.output_file = os.path.join(self.opts['output_dir'], "grafana-backup-" + time.strftime("%Y%m%d%H%M%S") + ".tgz")
     self.tmpdir = tempfile.mkdtemp() + '/' + os.path.splitext(os.path.basename(self.output_file))[0]
 
   def api_read(self, query):
