@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# grafana.py
+# grafana-backup.py
 #
 # Author: Matteo Cerutti <matteo.cerutti@hotmail.co.uk>
 #
